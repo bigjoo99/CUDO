@@ -1,7 +1,37 @@
-# VLM Scene Analysis API 서버 설명서
+# Metis VLM 상황분석 API — 설정 가이드
 
-이 문서는 `vlm_api_server_ver4.py`를 개발팀에 전달하기 위한 설명서입니다.  
-본 코드는 AI 연구팀에서 작성한 Qwen3-VL 기반 CCTV/감시 영상 분석용 FastAPI 서버 예시이며, 실제 운영 API 연동, 인증, 배포 구조, callback 수신부 구현 등은 개발팀 환경에 맞게 조정할 수 있습니다.
+---
+
+## 목차
+
+- [1. 전체 개요](#1-전체-개요)
+- [2. 지원하는 query_type](#2-지원하는-query_type)
+  - [2.1 query_type = 0: Text Query](#21-query_type--0-text-query)
+  - [2.2 query_type = 1: Image Query](#22-query_type--1-image-query)
+- [3. 지원 API](#3-지원-api)
+  - [3.1 VLM 헬스 체크](#31-vlm-헬스-체크)
+  - [3.2 영상 분석 작업 요청](#32-영상-분석-작업-요청)
+  - [3.3 영상 분석 작업 취소](#33-영상-분석-작업-취소)
+  - [3.4 영상 분석 작업 조회](#34-영상-분석-작업-조회)
+  - [3.5 영상 분석 작업 목록 조회](#35-영상-분석-작업-목록-조회)
+- [4. Callback 구조](#4-callback-구조)
+  - [4.1 Progress Callback 예시](#41-progress-callback-예시)
+  - [4.2 Single Video Result Callback 예시](#42-single-video-result-callback-예시)
+  - [4.3 Final Summary Callback 예시](#43-final-summary-callback-예시)
+- [5. AI 모델 부분 설명](#5-ai-모델-부분-설명)
+  - [5.1 사용 모델](#51-사용-모델)
+  - [5.2 Video Analysis 입력/출력](#52-video-analysis-입력출력)
+  - [5.3 Query Image Caption 입력/출력](#53-query-image-caption-입력출력)
+- [6. 주요 환경 변수](#6-주요-환경-변수)
+- [7. 작업 상태값](#7-작업-상태값)
+- [8. 개발팀 연동 시 주의사항](#8-개발팀-연동-시-주의사항)
+  - [8.1 모델 파일 위치](#81-모델-파일-위치)
+  - [8.2 파일 경로 매핑](#82-파일-경로-매핑)
+  - [8.3 callback URL 처리](#83-callback-url-처리)
+  - [8.4 출력 parsing 없음](#84-출력-parsing-없음)
+  - [8.5 단일 작업 처리와 queue](#85-단일-작업-처리와-queue)
+  - [8.6 프로세스 메모리 기반 상태 관리](#86-프로세스-메모리-기반-상태-관리)
+- [9. 실행 예시](#9-실행-예시)
 
 ---
 
@@ -559,13 +589,4 @@ uvicorn vlm_api_server_ver4:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 10. 개발팀에서 확인하면 좋은 부분
 
-- 실제 CUVIA callback URL 형식
-- `summary.total_cnt = video_count + 1` 규칙 유지 여부
-- 작업 상태 저장을 메모리로 유지할지 DB로 분리할지
-- 파일 경로 매핑 규칙
-- 인증 토큰 적용 여부
-- 모델 서버를 API 서버와 같은 프로세스로 둘지 별도 inference server로 분리할지
-- callback 실패 시 재시도 정책
-- 대용량 비디오/다수 작업 요청 시 queue 및 timeout 정책
